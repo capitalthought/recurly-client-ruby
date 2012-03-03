@@ -58,6 +58,21 @@ EOE
         params
       end
 
+      # Fetches a record using a token provided by Recurly.js.
+      # @param [String] Token to look up
+      # @return [BillingInfo, Invoice, Subscription] The record created or
+      #   modified by Recurly.js
+      # @raise [API::NotFound] No record was found for the token provided.
+      # @example
+      #   begin
+      #     Recurly.js.fetch params[:token]
+      #   rescue Recurly::API::NotFound
+      #     # Handle potential tampering here.
+      #   end
+      def fetch token
+        Resource.from_response API.get "recurly_js/result/#{token}"
+      end
+
       # @return [String]
       def inspect
         'Recurly.js'
