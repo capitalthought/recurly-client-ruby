@@ -1,4 +1,5 @@
 require 'openssl'
+require 'base64'
 require 'recurly/js/deprecated_methods'
 
 module Recurly
@@ -25,8 +26,11 @@ module Recurly
 
       # Create a signature for a given hash for Recurly.js
       # @param [Hash] Hash of data to sign as protected data
-      def sign data
+      def sign data = {}
         data[:timestamp] ||= Time.now.to_i
+        data[:nonce] ||= Base64.encode64(
+          OpenSSL::Random.random_bytes(32)
+        ).gsub(/\W/, '')
         unsigned = to_query data
         signed = digest unsigned
         [signed, unsigned].join '|'
@@ -98,7 +102,7 @@ EOE
       def from_query string
         string.scan(/([^=&]+)=([^=&]*)/).inject({}) do |hash, pair|
           key, value = pair.map(&CGI.method(:unescape))
-          keypath, array = key.scan(/[^\[\]]+/), key[/\[\]$/]
+          keypath, array = key.scan(/[^\[\]]+/), key.end_with?('[]')
           keypath.inject(hash) do |nest, component|
             next nest[component] ||= {} unless keypath.last == component
             array ? (nest[component] ||= []) << value : nest[component] = value

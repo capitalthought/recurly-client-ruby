@@ -36,7 +36,7 @@ module Recurly
       # @raise [RequestForgery] If verification fails.
       def verify_subscription! params
         deprecated!
-        verify_signature! params[:signature]
+        verify! params[:signature]
       end
 
       # @deprecated Use {.verify!} instead.
@@ -44,7 +44,7 @@ module Recurly
       # @raise [RequestForgery] If verification fails.
       def verify_billing_info! params
         deprecated!
-        verify_signature! params[:signature]
+        verify! params[:signature]
       end
 
       # @deprecated Use {.verify!} instead.
@@ -52,7 +52,7 @@ module Recurly
       # @raise [RequestForgery] If verification fails.
       def verify_transaction! params
         deprecated!
-        verify_signature! params[:signature]
+        verify! params[:signature]
       end
 
       private
